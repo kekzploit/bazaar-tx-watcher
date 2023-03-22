@@ -1,0 +1,4 @@
+WALLET:
+  URL: "http://localhost:11212/json_rpc"
+MONGO:
+  URI: mongodb://localhost:27017
