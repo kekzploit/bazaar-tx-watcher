@@ -112,6 +112,6 @@ func Txs(walletUrl string, mongoUri string) {
 	// check for new vendor signups every x minutes
 	for {
 		GetTxs(walletUrl, mongoUri)
-		time.Sleep(10 * time.Second)
+		time.Sleep(60 * time.Second)
 	}
 }
