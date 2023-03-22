@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/kekzploit/bazaar-tx-watcher/pkg/db"
 	"io"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type Transactions struct {
@@ -54,8 +57,7 @@ type Transactions struct {
 	} `json:"result"`
 }
 
-func GetTxs(url string) {
-	//walletUrl := url
+func GetTxs(walletUrl string, mongoUri string) {
 	jsonBody := fmt.Sprintln(`{
     "jsonrpc": "2.0",
     "id": 0,
@@ -69,7 +71,7 @@ func GetTxs(url string) {
       "exclude_unconfirmed": true
     }
   }`)
-	request, err := http.NewRequest("POST", "http://localhost:11212/json_rpc", bytes.NewBuffer([]byte(jsonBody)))
+	request, err := http.NewRequest("POST", walletUrl, bytes.NewBuffer([]byte(jsonBody)))
 	if err != nil {
 		fmt.Println("error") // return meaningful statement
 	}
@@ -93,6 +95,23 @@ func GetTxs(url string) {
 	_ = json.Unmarshal([]byte(body), &data)
 
 	for _, tx := range data.Result.Transfers {
-		fmt.Println(tx.Amount)
+
+		//check for occurrences of ; separator
+		if tx.Comment != "" && strings.Count(tx.Comment, ";") >= 3 {
+			exists := db.MongoCheck(tx.TxHash, mongoUri)
+			if !exists {
+				result := strings.Split(tx.Comment, ";") // parse vendor details from tx comment
+				fmt.Printf("\nAdding vendor to MongoDB:\n%s\n\n", tx.TxHash)
+				db.AddVendor(mongoUri, result[0], result[1], result[2], result[3], tx.TxHash)
+			}
+		}
+	}
+}
+
+func Txs(walletUrl string, mongoUri string) {
+	// check for new vendor signups every x minutes
+	for {
+		GetTxs(walletUrl, mongoUri)
+		time.Sleep(10 * time.Second)
 	}
 }

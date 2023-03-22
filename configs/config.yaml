@@ -2,3 +2,5 @@ WALLET:
   URL: "http://localhost:11212/json_rpc"
 MONGO:
   URI: mongodb://localhost:27017
+BAZAAR:
+  FEE: 50000000000000

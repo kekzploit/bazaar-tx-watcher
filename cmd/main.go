@@ -16,7 +16,5 @@ func main() {
 		panic(fmt.Errorf("fatal error config file: %w", err))
 	}
 
-	walletUrl := viper.Get("WALLET.URL").(string)
-
-	tx.GetTxs(walletUrl) // fetch transactions from zano daemon
+	tx.Txs(viper.Get("WALLET.URL").(string), viper.Get("MONGO.URI").(string)) // fetch transactions from zano daemon
 }
