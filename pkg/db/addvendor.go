@@ -51,6 +51,6 @@ func AddVendor(mongoUri, image string, title string, description string, secret 
 	if id != "" {
 		fmt.Println(id)
 	} else {
-		fmt.Println("no ObjectId")
+		fmt.Println("no ObjectId present")
 	}
 }
