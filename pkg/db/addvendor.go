@@ -3,13 +3,14 @@ package db
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"time"
 )
 
-func AddVendor(mongoUri, image string, title string, description string, secret string, txHash string) {
+func AddVendor(mongoUri, image string, title string, description string, secret string, accType string, amount int64, txHash string) {
 	// instantiate mongodb client
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -39,7 +40,10 @@ func AddVendor(mongoUri, image string, title string, description string, secret 
 		}},
 		{Key: "offers", Value: bson.A{}},
 		{Key: "secret", Value: secret},
+		{Key: "url", Value: uuid.New().String()},
 		{Key: "time", Value: time.Now().Unix()},
+		{Key: "time", Value: accType},
+		{Key: "time", Value: amount},
 		{Key: "tx_hash", Value: txHash}})
 
 	id := res.InsertedID

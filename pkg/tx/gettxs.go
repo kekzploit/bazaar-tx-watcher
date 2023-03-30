@@ -94,15 +94,35 @@ func GetTxs(walletUrl string, mongoUri string) {
 
 	_ = json.Unmarshal([]byte(body), &data)
 
+	var accType string
+
 	for _, tx := range data.Result.Transfers {
 
 		//check for occurrences of ; separator
 		if tx.Comment != "" && strings.Count(tx.Comment, ";") >= 3 {
 			exists := db.MongoCheck(tx.TxHash, mongoUri)
 			if !exists {
+
+				if tx.Amount >= 100000000000000 { // 100 ZANO
+					accType = "featured"
+				}
+
+				if tx.Amount < 100000000000000 && tx.Amount >= 50000000000000 { // 50 ZANO
+					accType = "enhanced"
+				}
+
+				if tx.Amount < 50000000000000 && tx.Amount > 20000000000000 { // 20 ZANO
+					accType = "basic"
+				}
+
+				if tx.Amount < 20000000000000 { // less than 20 ZANO
+					accType = ""
+				}
+
+				fmt.Println(tx.Amount)
 				result := strings.Split(tx.Comment, ";") // parse vendor details from tx comment
 				fmt.Printf("\nAdding vendor to MongoDB:\n%s\n\n", tx.TxHash)
-				db.AddVendor(mongoUri, result[0], result[1], result[2], result[3], tx.TxHash)
+				db.AddVendor(mongoUri, result[0], result[1], result[2], result[3], accType, tx.Amount, tx.TxHash)
 			}
 		}
 	}
