@@ -42,8 +42,8 @@ func AddVendor(mongoUri, image string, title string, description string, secret 
 		{Key: "secret", Value: secret},
 		{Key: "url", Value: uuid.New().String()},
 		{Key: "time", Value: time.Now().Unix()},
-		{Key: "time", Value: accType},
-		{Key: "time", Value: amount},
+		{Key: "type", Value: accType},
+		{Key: "amount", Value: amount},
 		{Key: "tx_hash", Value: txHash}})
 
 	id := res.InsertedID
